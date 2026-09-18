@@ -1283,16 +1283,9 @@ import { showPlanModeBlocked, hidePlanModeBlocked, initPlanModeBanner } from './
 
     /** Wire up the configure form (welcome screen). */
     function initConfigureForm(vscode) {
-        // All DOM lookups done inside this function
-        const configureModelBtn = document.getElementById('configureModelBtn');
-        const configureForm = document.getElementById('configureForm');
-        const cancelConfigureBtn = document.getElementById('cancelConfigureBtn');
-        const saveConfigureBtn = document.getElementById('saveConfigureBtn');
-        const addModelRowBtn = document.getElementById('addModelRowBtn');
-        const configureModelRows = document.getElementById('configureModelRows');
-
         /** Add a dynamic model input row to the configure form. */
         function addModelRow() {
+            const configureModelRows = document.getElementById('configureModelRows');
             if (!configureModelRows) return;
             const row = document.createElement('div');
             row.className = 'configure-model-row';
@@ -1323,9 +1316,19 @@ import { showPlanModeBlocked, hidePlanModeBlocked, initPlanModeBanner } from './
             input.focus();
         }
 
-        if (configureModelBtn) {
-            configureModelBtn.addEventListener('click', () => {
-                configureModelBtn.style.display = 'none';
+        // Event delegation on `document`, not the buttons themselves: this
+        // whole subtree lives inside #emptyState, which loadMessages() (see
+        // its cloneNode(true) call) destroys and rebuilds on every chat
+        // load/switch to survive its innerHTML='' reset. cloneNode never
+        // copies listeners, so binding directly to these buttons meant the
+        // form silently stopped responding to clicks after the very first
+        // loadMessages message — delegating to `document`, which is never
+        // replaced, keeps it working across any number of reloads.
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#configureModelBtn')) {
+                const configureModelBtn = document.getElementById('configureModelBtn');
+                const configureForm = document.getElementById('configureForm');
+                if (configureModelBtn) configureModelBtn.style.display = 'none';
                 if (configureForm) configureForm.style.display = '';
                 // Seed first model row
                 addModelRow();
@@ -1333,11 +1336,13 @@ import { showPlanModeBlocked, hidePlanModeBlocked, initPlanModeBanner } from './
                     const nameInput = document.getElementById('configureProviderName');
                     if (nameInput) nameInput.focus();
                 }, 50);
-            });
-        }
+                return;
+            }
 
-        if (cancelConfigureBtn) {
-            cancelConfigureBtn.addEventListener('click', () => {
+            if (e.target.closest('#cancelConfigureBtn')) {
+                const configureForm = document.getElementById('configureForm');
+                const configureModelBtn = document.getElementById('configureModelBtn');
+                const configureModelRows = document.getElementById('configureModelRows');
                 if (configureForm) configureForm.style.display = 'none';
                 if (configureModelBtn) configureModelBtn.style.display = '';
                 // Clear model rows on cancel
@@ -1349,15 +1354,16 @@ import { showPlanModeBlocked, hidePlanModeBlocked, initPlanModeBanner } from './
                 if (providerEndpoint) providerEndpoint.value = '';
                 const providerApiKey = document.getElementById('configureProviderApiKey');
                 if (providerApiKey) providerApiKey.value = '';
-            });
-        }
+                return;
+            }
 
-        if (addModelRowBtn) {
-            addModelRowBtn.addEventListener('click', addModelRow);
-        }
+            if (e.target.closest('#addModelRowBtn')) {
+                addModelRow();
+                return;
+            }
 
-        if (saveConfigureBtn) {
-            saveConfigureBtn.addEventListener('click', () => {
+            if (e.target.closest('#saveConfigureBtn')) {
+                const configureModelRows = document.getElementById('configureModelRows');
                 const providerName = (document.getElementById('configureProviderName')?.value || '').trim();
                 const providerEndpoint = (document.getElementById('configureProviderEndpoint')?.value || '').trim();
                 const providerApiKey = (document.getElementById('configureProviderApiKey')?.value || '').trim();
@@ -1382,8 +1388,9 @@ import { showPlanModeBlocked, hidePlanModeBlocked, initPlanModeBanner } from './
                     providerApiKey,
                     models
                 });
-            });
-        }
+                return;
+            }
+        });
     }
 
     // ============================================================

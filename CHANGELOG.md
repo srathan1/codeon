@@ -2,6 +2,10 @@
 
 All notable changes to CodeOn are documented here.
 
+## [0.1.1]
+
+- Fix: "Configure Model" button (and the rest of the welcome-screen setup form) stopped responding after the first chat load/restore — event listeners were bound directly to elements that get replaced on every `loadMessages` call. Now wired via event delegation so it keeps working across reloads.
+
 ## [0.1.0]
 
 Initial public release, renamed from an internal project ("Flexible Chat Interface").

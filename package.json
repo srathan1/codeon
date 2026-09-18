@@ -2,7 +2,7 @@
   "name": "code-on",
   "displayName": "CodeOn AI",
   "description": "Always-on AI coding assistant for VS Code — built for your own self-hosted or OpenAI-compatible models (Ollama, LiteLLM, vLLM, and more). No vendor lock-in.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "SaiKiranRathan",
   "repository": {
     "type": "git",
