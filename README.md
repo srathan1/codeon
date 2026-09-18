@@ -1,4 +1,6 @@
-<h1 align="center">CodeOn</h1>
+<p align="center">
+  <img src="media/github-social-preview.png" width="720" alt="CodeOn — always-on AI coding assistant for VS Code">
+</p>
 
 <p align="center">
   <b>An always-on AI coding assistant for VS Code, built for your own self-hosted or OpenAI-compatible models.</b><br>
@@ -31,7 +33,7 @@ Most AI coding assistants tie you to one vendor's cloud API. CodeOn talks to **a
 
 ### 1. Install
 
-**From the Marketplace** *(once published)* — search "CodeOn" in the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
+**From the Marketplace** — search "CodeOn AI" in the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 
 **From source, for now:**
 ```bash
