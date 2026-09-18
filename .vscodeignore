@@ -1,0 +1,33 @@
+*.vsix
+.github/
+.git/
+.gitattributes
+.gitignore
+.qwen/
+.codeon/
+.codeon-memory/
+.internal-docs/
+.vscode/
+.vscode-test/
+.claude/
+src/
+out/test/
+build.bat
+build.sh
+eslint.config.js
+tsconfig.json
+webpack.config.js
+*.md
+!.vscodeignore
+!CHANGELOG.md
+
+# node_modules: only the 4 packages actually required at runtime
+# (everything else here is dev/test tooling — mocha, eslint, typescript,
+# @vscode/test-electron, etc. — that must never ship in the package).
+# js-tiktoken's own dependency (base64-js) is included explicitly since
+# vsce doesn't walk nested dependency trees for you.
+node_modules/**
+!node_modules/diff/**
+!node_modules/ignore/**
+!node_modules/js-tiktoken/**
+!node_modules/base64-js/**

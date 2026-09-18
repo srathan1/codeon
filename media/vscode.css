@@ -1,0 +1,24 @@
+:root {
+	--vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", system-ui, "Ubuntu", "Droid Sans", sans-serif;
+	--vscode-font-size: 13px;
+	--vscode-font-weight: normal;
+	--vscode-editor-background: #1e1e1e;
+	--vscode-editor-foreground: #cccccc;
+	--vscode-editorInfo-foreground: #3794ff;
+	--vscode-editorWarning-foreground: #d7ba7d;
+	--vscode-editorSuccess-foreground: #89d185;
+	--vscode-editorError-foreground: #f48771;
+	--vscode-textBlockQuote-background: #2a2d2e;
+	--vscode-textBlockQuote-border: #3c3c3c;
+	--vscode-textLink-foreground: #3794ff;
+	--vscode-descriptionForeground: #8c8c8c;
+	--vscode-button-background: #0e639c;
+	--vscode-button-foreground: #ffffff;
+	--vscode-button-hoverBackground: #1177bb;
+	--vscode-button-border: rgba(0, 0, 0, 0);
+	--vscode-input-background: #3c3c3c;
+	--vscode-input-foreground: #cccccc;
+	--vscode-input-border: #3c3c3c;
+	--vscode-editorWidget-border: #454545;
+	--vscode-panel-border: #444444;
+}

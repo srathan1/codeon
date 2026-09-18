@@ -1,0 +1,24 @@
+node_modules/
+out/
+.vscode-test/
+*.log
+.DS_Store
+*.vsix
+
+# Runtime data — audit logs, memory store, per-workspace state.
+# Never committed: contains real file paths, session data, and API
+# error text that can leak local/internal environment details.
+.codeon/
+.codeon-memory/
+
+# Local tool configs — machine-specific, not part of the extension.
+.qwen/
+.claude/
+
+# Internal planning/process docs and personal scratch files — not
+# part of the published extension or repo.
+.internal-docs/
+
+# Local workspace settings — can contain personal API keys/endpoints
+# for whatever backend the developer is testing against.
+.vscode/settings.json

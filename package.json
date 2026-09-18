@@ -1,0 +1,322 @@
+{
+  "name": "code-on",
+  "displayName": "CodeOn AI",
+  "description": "Always-on AI coding assistant for VS Code — built for your own self-hosted or OpenAI-compatible models (Ollama, LiteLLM, vLLM, and more). No vendor lock-in.",
+  "version": "0.1.0",
+  "publisher": "SaiKiranRathan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srathan1/codeon.git"
+  },
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.82.0"
+  },
+  "categories": [
+    "AI",
+    "Chat",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "ai",
+    "chat",
+    "coding assistant",
+    "llm",
+    "self-hosted",
+    "ollama",
+    "litellm",
+    "vllm",
+    "agent",
+    "openai-compatible",
+    "code review",
+    "autocomplete"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "enabledApiProposals": [
+    "inlineCompletionsAdditions"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "chat-container",
+          "title": "CodeOn",
+          "icon": "media/icons/chat.svg"
+        }
+      ]
+    },
+    "views": {
+      "chat-container": [
+        {
+          "type": "webview",
+          "id": "chat-view",
+          "name": "CodeOn"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "codeon.newChat",
+        "title": "CodeOn: New Chat"
+      },
+      {
+        "command": "codeon.rebuildIndex",
+        "title": "CodeOn: Rebuild Index"
+      },
+      {
+        "command": "codeon.editWithSelection",
+        "title": "CodeOn: Edit with Selection"
+      },
+      {
+        "command": "codeon.acceptDiff",
+        "title": "CodeOn: Accept Diff"
+      },
+      {
+        "command": "codeon.rejectDiff",
+        "title": "CodeOn: Reject Diff"
+      },
+      {
+        "command": "codeon.showLogs",
+        "title": "CodeOn: Show Request Logs"
+      },
+      {
+        "command": "codeon.indexInfo",
+        "title": "CodeOn: Index Info"
+      },
+      {
+        "command": "codeon.runSmokeTests",
+        "title": "CodeOn: Run Smoke Tests"
+      },
+      {
+        "command": "codeon.resetConversation",
+        "title": "CodeOn: Reset Conversation",
+        "icon": "$(close)"
+      }
+    ],
+    "configuration": {
+      "title": "CodeOn",
+      "properties": {
+        "codeon.temperature": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Sampling temperature (0 = deterministic, higher = more creative)"
+        },
+        "codeon.topP": {
+          "type": "number",
+          "default": 0.8,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Nucleus sampling top_p (0-1, lower = sharper focus)"
+        },
+        "codeon.topK": {
+          "type": "number",
+          "default": 20,
+          "minimum": 0,
+          "description": "Top-k sampling (0 = disabled, keeps only top K candidate tokens)"
+        },
+        "codeon.presencePenalty": {
+          "type": "number",
+          "default": 1.5,
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Presence penalty (positive = encourages exploring new topics)"
+        },
+        "codeon.repetitionPenalty": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Repetition penalty (1.0 = neutral, higher = suppresses repeated tokens)"
+        },
+        "codeon.minP": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum probability threshold for token selection (0 = no floor)"
+        },
+        "codeon.defaultMode": {
+          "type": "string",
+          "enum": [
+            "plan",
+            "build",
+            "code-review",
+            "debug",
+            "research"
+          ],
+          "default": "plan",
+          "description": "Default chat mode"
+        },
+        "codeon.openCodeEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable OpenCode tool calling"
+        },
+        "codeon.openCodeApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenCode API key (if required)"
+        },
+        "codeon.approvalThreshold": {
+          "type": "string",
+          "enum": [
+            "safe",
+            "moderate",
+            "dangerous"
+          ],
+          "default": "moderate",
+          "description": "Tools at or above this risk level require user approval before execution (overridden by interaction mode dropdown)"
+        },
+        "codeon.interactionMode": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "autoedit",
+            "relaxed"
+          ],
+          "default": "ask",
+          "description": "Interaction mode: ask (approve every tool), autoedit (auto-approve reads, prompt for edits), relaxed (only prompt for shell commands)"
+        },
+        "codeon.assistantName": {
+          "type": "string",
+          "default": "",
+          "description": "Display name for the AI assistant in chat. Leave empty to use the current model name."
+        },
+        "codeon.commandTimeout": {
+          "type": "number",
+          "default": 30,
+          "description": "Default timeout for execute_command in seconds"
+        },
+        "codeon.commandBlocklist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "rm -rf",
+            ":(){ :|:};",
+            "mkfs",
+            "dd if="
+          ],
+          "description": "Commands matching these patterns (case-insensitive substring) are blocked"
+        },
+        "codeon.autocompleteEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline autocomplete (ghost text on typing)"
+        },
+        "codeon.autocompleteModel": {
+          "type": "string",
+          "default": "",
+          "description": "Dedicated model for autocomplete (leave empty to use main model)"
+        },
+        "codeon.autocompleteDebounceMs": {
+          "type": "number",
+          "default": 200,
+          "minimum": 50,
+          "maximum": 1000,
+          "description": "Debounce delay in milliseconds before sending autocomplete request"
+        },
+        "codeon.autocompleteContextLines": {
+          "type": "number",
+          "default": 15,
+          "minimum": 3,
+          "maximum": 200,
+          "description": "Number of lines of prefix/suffix context to include in autocomplete request. Lower values reduce token usage per keystroke; higher values give the model more surrounding code to understand."
+        },
+        "codeon.autoSummarizeThreshold": {
+          "type": "number",
+          "default": 75,
+          "minimum": 20,
+          "maximum": 90,
+          "description": "Auto-summarize conversation when context usage exceeds this percentage of the window (0 to disable). Higher values delay compaction but preserve more context."
+        },
+        "codeon.toolOutputMaxChars": {
+          "type": "number",
+          "default": 15000,
+          "minimum": 2000,
+          "maximum": 50000,
+          "description": "Maximum characters per tool result stored in context (prevents context explosion from large file reads)"
+        },
+        "codeon.autoVerifyEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically run diagnostics, typecheck, and lint after file-modifying tool calls in build/debug mode. Results are fed back to the model for self-correction."
+        },
+        "codeon.autoVerifyTimeout": {
+          "type": "number",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 300,
+          "description": "Maximum seconds for auto-verification (split across diagnostics, typecheck, lint steps)."
+        },
+        "codeon.autoVerifyLintCommand": {
+          "type": "string",
+          "default": "",
+          "description": "Override the auto-detected lint command. Leave empty for auto-detection. Example: 'npx eslint src/foo.ts'"
+        },
+        "codeon.autoVerifyTestCommand": {
+          "type": "string",
+          "default": "",
+          "description": "Override the auto-detected test command. Leave empty for auto-detection. Tests are not run by default (too slow) — set autoVerifySteps.test=true to enable."
+        },
+        "codeon.searchProvider": {
+          "type": "string",
+          "default": "",
+          "description": "Comma-separated list of search providers to try (e.g. 'brave,serper,duckduckgo'). Auto-detected from available API keys if empty. Supported: brave, serper, searxng, duckduckgo."
+        },
+        "codeon.braveSearchApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Brave Search API key for web_search tool. Get a free key at https://api.brave.com (2000 queries/month). Also supports BRAVE_SEARCH_API_KEY env var.",
+          "order": 99
+        },
+        "codeon.serperApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Serper (Google) API key for web_search tool. Get a free tier key at https://serper.dev. Also supports SERPER_API_KEY env var.",
+          "order": 99
+        },
+        "codeon.searxngUrl": {
+          "type": "string",
+          "default": "",
+          "description": "SearXNG instance URL for web_search tool (e.g. https://searxng.example.com). Also supports SEARXNG_URL env var."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/diff": "^7.0.2",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^26.2.0",
+    "@types/sinon": "^22.0.0",
+    "@types/vscode": "^1.82.0",
+    "@typescript-eslint/eslint-plugin": "^8.66.0",
+    "@typescript-eslint/parser": "^8.66.0",
+    "@vscode/test-electron": "^3.1.0",
+    "eslint": "^10.8.0",
+    "mocha": "^11.8.0",
+    "sinon": "^22.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "diff": "^9.0.0",
+    "ignore": "^7.0.0",
+    "js-tiktoken": "^1.0.21"
+  }
+}
